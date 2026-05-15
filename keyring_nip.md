@@ -18,7 +18,13 @@ This nip should propose an event for otherkey/subkey/masterkey-relationships.
     ...
     ["M", <32-bytes lowercase hex-encoded public key of a masterkey>, <optional description / function of the masterkey>]
   ]
-  "content": "",
+  "content": nip44_encrypted("
+    [
+      { relation: "S or M or O from above", pubkey: <32-bytes lowercase hex-encoded public key of key>, name: "<name of key/account", description: "<optional desccription>", seckey: <hex of secret key>, function: "signing, certify, encryption or authentication" },
+      ...,
+      { ... }
+    ]
+  "),
   "sig": <64-bytes lowercase hex of the signature of the sha256 hash of the serialized event data, which is the same as the "id" field>
 }
 ~~~
