@@ -2,7 +2,9 @@
 
 This nip should propose an event for otherkey/subkey/masterkey-relationships.
 
-The keyring event, should have the following format:
+The keyring events, should have the following format:
+
+Public keyring part, kind 17991:
 
 ~~~
 {
@@ -20,13 +22,28 @@ The keyring event, should have the following format:
     ...
     ["M", <32-bytes lowercase hex-encoded public key of a masterkey>, <optional description / function (e.g. "signing", "certify", "encryption", and/or "authentication") of the masterkey>]
   ]
-  "content": nip44_encrypted("
+  "content": "",
+  "sig": <64-bytes lowercase hex of the signature of the sha256 hash of the serialized event data, which is the same as the "id" field>
+}
+~~~
+
+Private keyring part, kind 17992:
+
+~~~
+{
+  "id": <32-bytes lowercase hex-encoded sha256 of the serialized note data>,
+  "pubkey": <32-bytes lowercase hex-encoded public key of the publisher>,
+  "kind": 17991, // as defined in NIP-01 a replacable kind-number is used for this event-type
+  "tags": [
+    ["encryption", "e.g. nip44_v2, etc."]
+  ],
+  "content": as_in_tag_specified_encrypted(
     [
-      { relation: "<S or M or O from the related keys from the tags>", name: "<name of key/account>", description: "<optional desccription>", pubkey: <32-bytes lowercase hex-encoded public key of key>, seckey: <hex of secret key>, function: ["signing", "certify", "encryption", and/or "authentication""] },
+      { relation: "<S or M or O from the related keys from the public keyring part tags>", name: "<name of key/account>", description: "<optional desccription>", pubkey: <32-bytes lowercase hex-encoded public key of key>, seckey: <hex of secret key>, function: ["signing", "certify", "encryption", and/or "authentication""] },
       ...,
       { ... }
     ]
-  "),
+  ),
   "sig": <64-bytes lowercase hex of the signature of the sha256 hash of the serialized event data, which is the same as the "id" field>
 }
 ~~~
