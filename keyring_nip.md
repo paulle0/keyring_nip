@@ -17,7 +17,7 @@ Public keyring part, kind 17991:
     ["S", <32-bytes lowercase hex-encoded public key of a subkey>, <optional description / function (e.g. "signing", "certify", "encryption", and/or "authentication") of the subkey>],
     ["O", <32-bytes lowercase hex-encoded public key of an other key>, <optional description / function (e.g. "signing", "certify", "encryption", and/or "authentication") of the otherkey>],
     ...
-     ["O", <32-bytes lowercase hex-encoded public key of an other key>, <optional description / function (e.g. "signing", "certify", "encryption", and/or "authentication") of the otherkey>],
+    ["O", <32-bytes lowercase hex-encoded public key of an other key>, <optional description / function (e.g. "signing", "certify", "encryption", and/or "authentication") of the otherkey>],
     ["M", <32-bytes lowercase hex-encoded public key of a masterkey>, <optional description / function (e.g. "signing", "certify", "encryption", and/or "authentication") of the masterkey>],
     ...
     ["M", <32-bytes lowercase hex-encoded public key of a masterkey>, <optional description / function (e.g. "signing", "certify", "encryption", and/or "authentication") of the masterkey>]
@@ -33,7 +33,7 @@ Private keyring part, kind 17992:
 {
   "id": <32-bytes lowercase hex-encoded sha256 of the serialized note data>,
   "pubkey": <32-bytes lowercase hex-encoded public key of the publisher>,
-  "kind": 17991, // as defined in NIP-01 a replacable kind-number is used for this event-type
+  "kind": 17992, // as defined in NIP-01 a replacable kind-number is used for this event-type
   "tags": [
     ["encryption", "e.g. nip44_v2, etc."]
   ],
