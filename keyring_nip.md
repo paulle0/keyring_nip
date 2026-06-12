@@ -39,7 +39,7 @@ Private keyring part, kind 17992 (should mirror kind 17991 normally, but with mo
   ],
   "content": as_in_tag_specified_encrypted(
     [
-      { relation: "<S (for subkey) or M (for masterkey) or O (for otherkey)>", name: "<name of key/account>", description: "<optional desccription>", pubkey: <32-bytes lowercase hex-encoded public key of key>, seckey: <hex of secret key>, function: ["signing", "certify", "encryption", and/or "authentication""] },
+      { relation: "<S (for subkey) or M (for masterkey) or O (for otherkey)>", name: "<name of key/account>", description: "<optional desccription>", pubkey: <32-bytes lowercase hex-encoded public key of key>, seckey: <hex of secret key>, function: ["signing", "certify", "encryption", and/or "authentication""], delegation: <optional delegation rules, such as defined in NIP-26, meaning a String with = / ! / & / | / ( ) / < > and field values, e.g. "kind=1|kind=2" (allowed to sign kind=1 or kind=2 events> },
       ...,
       { ... }
     ]
