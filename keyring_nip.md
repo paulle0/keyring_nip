@@ -4,7 +4,7 @@ This nip should propose an event for otherkey/subkey/masterkey-relationships.
 
 The keyring events, should have the following format:
 
-Public keyring part, kind 17991:
+Public keyring part, kind 17991 (publishes the needed public information for the related keys):
 
 ~~~
 {
@@ -18,7 +18,7 @@ Public keyring part, kind 17991:
   ]
   "content": Stringified(
     [
-      { pubkey: <32-bytes lowercase hex-encoded public key of key>, relation: "<S (for subkey) or M (for masterkey) or O (for otherkey)>", function: ["signing", "certify", "encryption", and/or "authentication""], delegation: <optional delegation rules, such as defined in NIP-26, meaning a String with = / ! / & / | / ( ) / < > and field values, e.g. "kind=1|kind=2" (allowed to sign kind=1 or kind=2 events> },
+      { pubkey: <32-bytes lowercase hex-encoded public key of key>, relation: "<S (for subkey) or M (for masterkey) or O (for otherkey)>", function: ["signing", "certify", "encryption", and/or "authentication""], delegation: "<optional delegation rules, such as defined in NIP-26, meaning a String with = (equal) / ! (not) / & (and) / | (or) / ( ) (flow) / < > (greater, smaller) / <> (not equal) and nostr event field or tag values, e.g. "kind=1|kind=2" (allowed to sign kind=1 or kind=2 events. If empty no restrictions.>" },
       ...,
       { ... }
     ]
@@ -27,7 +27,7 @@ Public keyring part, kind 17991:
 }
 ~~~
 
-Private keyring part, kind 17992 (should mirror kind 17991 normally, but with more private information):
+Private keyring part, kind 17992 (should mirror kind 17991 normally regarding the keys, but has additional private information for the keys):
 
 ~~~
 {
@@ -39,7 +39,7 @@ Private keyring part, kind 17992 (should mirror kind 17991 normally, but with mo
   ],
   "content": as_in_tag_specified_encrypted(
     [
-      { relation: "<S (for subkey) or M (for masterkey) or O (for otherkey)>", name: "<name of key/account>", description: "<optional desccription>", pubkey: <32-bytes lowercase hex-encoded public key of key>, seckey: <hex of secret key>, function: ["signing", "certify", "encryption", and/or "authentication""], delegation: <optional delegation rules, such as defined in NIP-26, meaning a String with = / ! / & / | / ( ) / < > and field values, e.g. "kind=1|kind=2" (allowed to sign kind=1 or kind=2 events> },
+      { pubkey: <32-bytes lowercase hex-encoded public key of key>, seckey: <hex of secret key>, name: "<name of key/account>", description: "<optional desccription>" },
       ...,
       { ... }
     ]
@@ -57,22 +57,18 @@ Related to the keyring event here a protocol for conducting a login with a subke
 
 ### Option 1:
 
-A masterkey keyring signer app creates a random secret key as subkey. It includes it in its keyring event as subkey. For the subkey it creates a keyring event with the masterkey included. 
+A masterkey keyring signer app creates a random secret key as subkey. It includes it in its keyring event as subkey.
 
 It creates a bech32 string in the format 'nlogin...'. The bech32-string should follow in general the instructions of NIP19. The prefix should be 'nlogin'. TLV 0 is the 32 bytes of the subkey secret key. TLV 1 is the specified home-relays of the masterkey. TLV 2 is the pubkey of the masterkey. And TLV 3 is the keyring kind number 17991.
 
-The bech32-string 'nlogin...' is then shared with the login-program, one wants to login with (login-program), e.g. via 'copy-and-paste' or a QR-Code, etc.. The login-program takes the string, decodes it and uses the login subkey and login relays to fetch the subkey-keyring event and the masterkey-keyring event to verify the validity.
+The bech32-string 'nlogin...' is then shared with the login-program, one wants to login with (login-program), e.g. via 'copy-and-paste' or a QR-Code, etc.. The login-program takes the string, decodes it and uses the login subkey and login relays to fetch, if already existing, the subkey-keyring event, and the masterkey-keyring event to verify the validity. If there is no subkey-keyring event yet, it creates a new one, including the masterkey reference.
 The login-program can now use the subkey secret key and the user is logged in.
 
 ### Option 2:
 
-User pastes into the login-program, it wants to log into, its NIP05 DNS-based identifier. The login-program fetches the user-npub and the user-relays. The login-prgram creates a random subkey secret key and creates a 'nlogin...' bech32-string as defined in Option 1, where TLV 0 is the subkey secret key or subkey public key (if you don't want to share and save subkey secret key). TLV 1 is the relays from NIP05 DNS-based identifier. TLV 2 is the npub from the NIP05 DNS-based identifier. TLV3 is the keyring kind number 17991. 
+User pastes into the login-program, it wants to log into, its NIP05 DNS-based identifier, or similar (e.g. nprofile-string). The login-program fetches the user-npub and the user-relays. The login-program creates a random subkey secret key and creates a 'nlogin...' bech32-string as defined in Option 1, where TLV 0 is the subkey secret key or subkey public key (if you don't want to share and save subkey secret key). TLV 1 is the relays from NIP05 DNS-based, or similar, identifier. TLV 2 is the npub from the NIP05 DNS-based, or similar, identifier. TLV3 is the keyring kind number 17991. 
 
-Now the login-program shares the 'nlogin..' bech32-string with the masterkey signer app, e.g. via 'copy-and-paste' or a QR-Code, etc.. The masterkey signer app decodes the 'nlogin...' bech32-string. The masterkey signer app includes the subkey in its keyring event and creates a respective subkey keyring event (or the subkey keyring event is created by login-program, if just subkey-npub is shared). The login-program tries to fetch the keyring events from the NIP05-identifier relays to check the validity of login.
-
-(The login-program could also just share the npub in the 'nlogin...' string of the subkey and create the subkey keyring event itself and share over the communicated relays.)
-(Instead of with the NIP05 DNS-Identifier this could also be done with the masterkey 'nprofile...' string.)
-
+Now the login-program shares the 'nlogin..' bech32-string with the masterkey signer app, e.g. via 'copy-and-paste' or a QR-Code, etc.. The masterkey signer app decodes the 'nlogin...' bech32-string. The masterkey signer app includes the subkey in its keyring event. The subkey keyring event is created by login-program. The login-program tries to fetch the masterkey-keyring event from the identifier relays to check the validity of login.
 
 ### Other option:
 
