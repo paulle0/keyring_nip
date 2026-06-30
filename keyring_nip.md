@@ -1,6 +1,6 @@
 # Nostr keyring nip 
 
-This nip should propose an event for otherkey/subkey/masterkey-relationships.
+This nip should propose an event for relatedkeys-relationships.
 
 The keyring events, should have the following format:
 
@@ -50,6 +50,7 @@ Private keyring part, kind 17992 (should mirror kind 17991 normally regarding th
 
 The related key should be included in the keyring event of the other related key respectively (e.g. masterkey includes subkey in its keyring event, subkey includes masterkey in its keyring event).
 Saving the secretkey of the related key in the content-field is optional. E.g. it probably doesn't make sense to save the nsec of the masterkey in the subkey keyring event, or one doesn't want to save it for any related key, etc..
+The private keyring part should be access-restricted by the relay (e.g. over AUTH-requirement).
 
 ## Nostr subkey login
 
