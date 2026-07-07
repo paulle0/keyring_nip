@@ -41,6 +41,8 @@ For a subkey, that publishes relation to masterkey:
 }
 ~~~
 
+The removal of the p tag constitutes a revocation of the subkey/masterkey, and clients should verify the relationship bidirectionally.
+
 ## Private keyring part, kind 17992
 
 The private keyring part should mirror the kind 17991 event regarding the keys, but has additional private information for the keys).
@@ -79,7 +81,7 @@ Related to the keyring event here a protocol for conducting a login with a subke
 
 The keyring-program has the secret key of a subkey from the masterkey keyring. Either through the kind 17992 event, or through a nlogin in it itself. 
 
-It creates a bech32 string in the format 'nlogin...'. The bech32-string should follow in general the instructions of NIP19. The prefix should be 'nlogin'. TLV 0 is the 32 bytes of the subkey secret key. TLV 1 is the specified home-relays of the masterkey. TLV 2 is the pubkey of the masterkey. And TLV 3 is the keyring kind number 17991.
+It creates a bech32 string in the format 'nlogin...'. The bech32-string should follow in general the instructions of NIP19. The prefix should be 'nlogin'. TLV 0 is the 32 bytes of the subkey secret key. TLV 1 is the specified home-relays of the masterkey. TLV 2 is the pubkey of the masterkey.
 
 The bech32-string 'nlogin...' is then shared with the program, with which one wants to login with (login-program), e.g. via 'copy-and-paste', a QR-Code, or a different way. The login-program takes the string, decodes it and uses the login subkey and login relays to fetch the kind 17991 events of the subkey and the masterkey and check its validity. If there is no subkey kind 17991 keyring event yet, it creates a new one, referencing the masterkey. If there is no, or a not matching kind 17991 event of the masterkey it throws an error.
 If the events are valid, the login-program can now use the subkey secret key and the user is logged in.
